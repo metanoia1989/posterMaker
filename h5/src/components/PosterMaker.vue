@@ -15,6 +15,8 @@
     ];
 
     const errMsg = ref('');
+    const width = ref(500)
+    const outline = ref(true)
 
     const form = reactive({
         title: '',
@@ -47,6 +49,7 @@
             errMsg.value = '请输入标题';
         }
 
+        outline.value = false;
         const preview = document.getElementById('poster-preview')
 
         html2canvas(preview)
@@ -59,6 +62,9 @@
                 document.body.appendChild(link)
                 link.click()
                 document.body.removeChild(link)
+            })
+            .then(function () {
+                outline.value = true;
             });
     }
 
@@ -66,11 +72,29 @@
 </script>
 
 <template>
-  <div class="poster-maker flex flex-row container mx-auto mt-16">
-    <div class="poster-form w-1/2">
+  <div class="poster-maker flex flex-wrap container mx-auto mt-16">
+    <div class="poster-form w-full md:w-1/2 p-4">
         <h2 class="text-2xl font-bold">请填写表单</h2>
           <div class="mt-8 max-w-md">
             <div class="grid grid-cols-1 gap-6">
+              <label class="block">
+                <span class="text-gray-700">海报宽度</span>
+                <input
+                  type="number"
+                  class="
+                    mt-0
+                    block
+                    w-full
+                    px-0.5
+                    border-0 border-b-2 border-gray-200
+                    focus:ring-0 focus:border-black
+                  "
+                  placeholder=""
+                  v-model="width"
+                />
+                <p class="text-gray-500 text-xs italic mt-1">单位px, 默认为500px</p>
+              </label>
+
               <label class="block">
                 <span class="text-gray-700">新闻标题</span>
                 <input
@@ -103,7 +127,6 @@
                   @change="pickFile"
                   placeholder=""
                 />
-                <p class="text-red-500 text-xs italic mt-1">{{ errMsg }}</p>
               </label>
               <label class="block">
                 <span class="text-gray-700">新闻类型</span>
@@ -142,6 +165,7 @@
                   rows="5"
                   v-model="form.content"
                 ></textarea>
+                <p class="text-red-500 text-xs italic mt-1">{{ errMsg }}</p>
               </label>
             </div>
             <div class="flex items-center justify-between mt-8">
@@ -153,8 +177,8 @@
           </div>
     </div>
 
-    <div class="preview-container w-1/2">
-        <div class="poster-preview" id="poster-preview">
+    <div class="preview-container w-full md:w-1/2 ">
+        <div :class="['poster-preview', outline ? 'outline' :'']" id="poster-preview" :style="{ width: width + 'px' }">
             <img class="img-preview" v-if="form.image" :src="form.image" />
             <div class="news-content p-5">
                 <div class="title-line">
@@ -171,12 +195,15 @@
 
 <style scoped>
     .preview-container {
-        outline: 1px solid gray;
+        margin-top: 20px;
         margin-bottom: 20px;
     }
     .poster-preview, .news-content {
         display: flex;
         flex-direction: column;
+    }
+    .outline {
+        outline: 1px solid gray;
     }
 
     .img-preview {
@@ -185,26 +212,34 @@
 
     .title-line {
         display: flex;
-        padding: 0px 0 15px;
+        padding: 0px 0 1rem;
         justify-content: space-between;
         align-items: center;
     }
 
     .title {
-        font-size: 28px;
+        font-size: 1.6rem;
         font-weight: bold;
+        max-width: calc(100% - 10rem) ;
+        word-wrap: break-word;
+
     }
     .cate {
-        height: 28px;
+        /* flex: 1 0 auto; */
+        /* max-width: 10.5rem; */
+        height: 1.5rem;
         border: 1px grey solid;
-        border-radius: 4px;
+        border-radius: 0.25rem;
         color: gray;
-        padding: 0px 8px;
-        font-size: 14px;
+        padding: 0px 0.5rem;
+        font-size: 0.9rem;
         white-space: nowrap;
-        margin-left: 10px;
+        margin-left: 0.5rem;
         display: flex;
         align-items: center;
         justify-content: center;
+    }
+    .content {
+        word-wrap: break-word;
     }
 </style>
